@@ -1,9 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:gde/responsive/mobileScreen.dart';
-import 'package:gde/responsive/responsive_layout.dart';
-import 'package:gde/responsive/webScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:gde/screens/signup_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,9 +29,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.black),
       title: 'Application',
-      home: const ResponsiveLayout(
-          WebScreenLayout: WebScreenLayout(),
-          MobileScreenLayout: MobileScreenLayout()),
+      home: const SignUp(),
     );
   }
 }
