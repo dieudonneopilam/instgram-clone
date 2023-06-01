@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gde/resources/storqge_method.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -14,7 +15,7 @@ class AuthMethods {
     required String password,
     required String username,
     required String bio,
-    // required Uint8List file,
+    required Uint8List file,
   }) async {
     String res = "some error";
     try {
@@ -22,10 +23,14 @@ class AuthMethods {
       if (email.isNotEmpty ||
           password.isNotEmpty ||
           username.isNotEmpty ||
-          bio.isNotEmpty) {
+          bio.isNotEmpty ||
+          file != null) {
         //registrer user
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
+
+        String photoUrl = await StorageMethods()
+            .uploadImageToStorage('profilPics', file, false);
         //add user to our databse
         _firestore.collection('users').doc(cred.user!.uid).set({
           'username': username,
@@ -33,7 +38,8 @@ class AuthMethods {
           'email': email,
           'bio': bio,
           'followers': [],
-          'followings': []
+          'followings': [],
+          'photoUrl': photoUrl
         });
 
         //other method to add user
@@ -53,6 +59,23 @@ class AuthMethods {
       res = e.toString();
     }
     print(res);
+    return res;
+  }
+
+  //login user
+  Future<String> loginUser(String email, String password) async {
+    String res = 'some error';
+    try {
+      if (email.isNotEmpty || password.isNotEmpty) {
+        await _auth.signInWithEmailAndPassword(
+            email: email, password: password);
+        res = 'success';
+      } else {
+        res = 'complete all fields';
+      }
+    } catch (e) {
+      res = e.toString();
+    }
     return res;
   }
 }

@@ -1,6 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:gde/responsive/mobileScreen.dart';
+import 'package:gde/responsive/responsive_layout.dart';
+import 'package:gde/responsive/webScreen.dart';
+import 'package:gde/screens/login_screen.dart';
 import 'package:gde/screens/signup_screen.dart';
 
 Future<void> main() async {
@@ -29,21 +34,29 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.black),
       title: 'Application',
-      home: const SignUp(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            if (snapshot.hasData) {
+              return ResponsiveLayout(
+                  WebScreenLayout: WebScreenLayout(),
+                  MobileScreenLayout: MobileScreenLayout());
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('${snapshot.hasError}'),
+              );
+            }
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return const LoginScreen();
+        },
+      ),
     );
   }
 }
-
-// class Home extends StatefulWidget {
-//   const Home({super.key});
-
-//   @override
-//   State<Home> createState() => _HomeState();
-// }
-
-// class _HomeState extends State<Home> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Scaffold();
-//   }
-// }

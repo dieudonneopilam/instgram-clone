@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gde/resources/auth_method.dart';
+import 'package:gde/screens/home.dart';
+import 'package:gde/screens/signup_screen.dart';
 import 'package:gde/widgets/text_field.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,6 +19,27 @@ class _LoginScreenState extends State<LoginScreen> {
     _mailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void goToSignUpPage() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignUp(),
+        ));
+  }
+
+  void loginUser() async {
+    String res = await AuthMethods()
+        .loginUser(_mailController.text, _passwordController.text);
+    if (res == 'success') {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Home(),
+          ));
+    }
+    print(res);
   }
 
   @override
@@ -55,15 +79,18 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(
                 height: 24,
               ),
-              Container(
-                width: double.infinity,
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                decoration: ShapeDecoration(
-                    color: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(4)))),
-                child: Text('Login'),
+              InkWell(
+                onTap: loginUser,
+                child: Container(
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  decoration: ShapeDecoration(
+                      color: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(4)))),
+                  child: Text('Login'),
+                ),
               ),
               const SizedBox(
                 height: 12,
@@ -83,9 +110,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     onTap: () {},
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        'Sign up',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      child: InkWell(
+                        onTap: goToSignUpPage,
+                        child: Text(
+                          'Sign up',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   )

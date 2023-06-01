@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gde/resources/auth_method.dart';
+import 'package:gde/screens/login_screen.dart';
 import 'package:gde/utils/utilis.dart';
 import 'package:gde/widgets/text_field.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,6 +27,14 @@ class _SignUp extends State<SignUp> {
     _passwordController.dispose();
     _usernameController.dispose();
     super.dispose();
+  }
+
+  void goToLoginPage() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginScreen(),
+        ));
   }
 
   selectImage() async {
@@ -124,6 +133,7 @@ class _SignUp extends State<SignUp> {
                   password: _passwordController.text,
                   username: _usernameController.text,
                   bio: _bioController.text,
+                  file: _img!,
                 ),
                 child: Container(
                   width: double.infinity,
@@ -155,9 +165,12 @@ class _SignUp extends State<SignUp> {
                       onTap: () {},
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          'Sign up',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        child: InkWell(
+                          onTap: goToLoginPage,
+                          child: Text(
+                            'Sign up',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
                     )
