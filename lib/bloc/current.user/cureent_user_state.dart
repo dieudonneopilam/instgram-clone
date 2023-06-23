@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 part of 'cureent_user_bloc.dart';
 
 abstract class CureentUserState extends Equatable {
@@ -9,7 +11,7 @@ abstract class CureentUserState extends Equatable {
 
 class CureentUserInitial extends CureentUserState {
   String i = 'aucun';
-  final AuthMethods _authMethods = AuthMethods();
+  // final AuthMethods _authMethods = AuthMethods();
   UserModel? user;
   UserModel get getUser => user!;
   // Future<String> refreshUser() async {

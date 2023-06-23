@@ -2,7 +2,6 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:gde/models/user.dart';
 import 'package:gde/resources/storqge_method.dart';
 
 class AuthMethods {
@@ -31,6 +30,7 @@ class AuthMethods {
           password.isNotEmpty ||
           username.isNotEmpty ||
           bio.isNotEmpty ||
+          // ignore: unnecessary_null_comparison
           file != null) {
         //registrer user
         UserCredential cred = await _auth.createUserWithEmailAndPassword(

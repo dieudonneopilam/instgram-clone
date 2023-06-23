@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:gde/models/user.dart';
-import 'package:gde/resources/auth_method.dart';
 
 part 'cureent_user_event.dart';
 part 'cureent_user_state.dart';
