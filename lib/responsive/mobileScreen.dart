@@ -1,6 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gde/bloc/bottom.navigation.bar/bottom_navigation_bar_bloc.dart';
+import 'package:gde/screens/add.post.dart';
+import 'package:gde/screens/feed_screen.dart';
+
+import '../bloc/current.user/cureent_user_bloc.dart';
 
 class MobileScreenLayout extends StatefulWidget {
   const MobileScreenLayout({super.key});
@@ -11,29 +16,51 @@ class MobileScreenLayout extends StatefulWidget {
 
 class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   String username = '';
-  void getusername() async {
-    DocumentSnapshot snap = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
-    setState(() {
-      username = (snap.data() as Map<String, dynamic>)['username'];
-    });
-    print(snap.data());
-  }
+
+  List<Widget> pages = [
+    FeedScreen(),
+    Text('data'),
+    AddPost(),
+    Text('data'),
+    Text('data')
+  ];
 
   @override
   void initState() {
-    getusername();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text('this is the mobile screen of $username'),
-      ),
+    return BlocBuilder<CureentUserBloc, CureentUserState>(
+      builder: (context, state) {
+        return BlocBuilder<BottomNavigationBarBloc, BottomNavigationBarState>(
+          builder: (context, state) {
+            return Scaffold(
+                body: pages[(state as BottomNavigationBarInitial).index],
+                bottomNavigationBar: CupertinoTabBar(
+                  activeColor: Colors.white,
+                  backgroundColor: Colors.black,
+                  currentIndex: (state).index,
+                  onTap: (value) => context
+                      .read<BottomNavigationBarBloc>()
+                      .add(ChangedIndex(index: value)),
+                  items: [
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.home), label: 'home'),
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.search), label: 'search'),
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.add_circle), label: 'add'),
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.favorite), label: 'favorite'),
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.person), label: 'person')
+                  ],
+                ));
+          },
+        );
+      },
     );
   }
 }

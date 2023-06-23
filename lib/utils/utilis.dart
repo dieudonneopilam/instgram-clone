@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter/material.dart';
 
 imagePicker(ImageSource source) async {
   final ImagePicker _imagePicker = ImagePicker();
