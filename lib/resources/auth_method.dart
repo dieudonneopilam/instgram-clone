@@ -4,16 +4,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gde/resources/storqge_method.dart';
 
+import '../models/user.dart';
+
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Future<UserModel> getUserDetails() async {
-  //   User currentUser = _auth.currentUser!;
-  //   DocumentSnapshot snapshot =
-  //       await _firestore.collection('users').doc(currentUser.uid).get();
-  //   // return UserModel.fromSnap(snapshot);
-  // }
+  Future<UserModel> getUserDetails() async {
+    User currentUser = _auth.currentUser!;
+    DocumentSnapshot snapshot =
+        await _firestore.collection('users').doc(currentUser.uid).get();
+    return UserModel.fromSnap(snapshot);
+  }
 
   //signup user
   Future<String> signUpUser({

@@ -19,7 +19,12 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
 
   List<Widget> pages = [
     FeedScreen(),
-    Text('data'),
+    BlocBuilder<CureentUserBloc, CureentUserState>(
+      builder: (context, state) {
+        return Center(
+            child: Text((state as CureentUserInitial).userModel.email));
+      },
+    ),
     AddPost(),
     Text('data'),
     Text('data')

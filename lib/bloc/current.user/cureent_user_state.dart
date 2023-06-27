@@ -9,18 +9,13 @@ abstract class CureentUserState extends Equatable {
   List<Object> get props => [];
 }
 
-class CureentUserInitial extends CureentUserState {
-  String i = 'aucun';
-  // final AuthMethods _authMethods = AuthMethods();
-  UserModel? user;
-  UserModel get getUser => user!;
-  // Future<String> refreshUser() async {
-  //   UserModel userModel = await _authMethods.getUserDetails();
-  //   user = userModel;
-  //   i = user!.email;
-  //   return user!.email;
-  // }
+enum RequestEtat { none, exist }
 
+class CureentUserInitial extends CureentUserState {
+  final UserModel userModel;
+  final RequestEtat etat;
+
+  CureentUserInitial({required this.userModel, required this.etat});
   @override
-  List<Object> get props => [user!, i];
+  List<Object> get props => [userModel, etat];
 }

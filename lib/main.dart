@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gde/bloc/bottom.navigation.bar/bottom_navigation_bar_bloc.dart';
+import 'package:gde/resources/auth_method.dart';
 import 'package:gde/responsive/mobileScreen.dart';
 import 'package:gde/responsive/responsive_layout.dart';
 import 'package:gde/responsive/webScreen.dart';
@@ -36,7 +37,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        BlocProvider(create: (context) => CureentUserBloc()),
+        BlocProvider(
+            create: (context) => CureentUserBloc(authMethod: AuthMethods())),
         BlocProvider(create: (context) => BottomNavigationBarBloc()),
       ],
       child: MaterialApp(
