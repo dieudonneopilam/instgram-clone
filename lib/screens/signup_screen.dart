@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -6,6 +8,8 @@ import 'package:gde/screens/login_screen.dart';
 import 'package:gde/utils/utilis.dart';
 import 'package:gde/widgets/text_field.dart';
 import 'package:image_picker/image_picker.dart';
+
+import 'home.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -19,6 +23,7 @@ class _SignUp extends State<SignUp> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
+  bool loading = false;
   Uint8List? _img;
   @override
   void dispose() {
@@ -37,10 +42,52 @@ class _SignUp extends State<SignUp> {
         ));
   }
 
+  void sign() async {
+    if (_img != null &&
+        _usernameController.text.isNotEmpty &&
+        _mailController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty) {
+      print('object');
+      setState(() {
+        loading = true;
+      });
+      String res = await AuthMethods().signUpUser(
+          email: _mailController.text,
+          password: _passwordController.text,
+          username: _usernameController.text,
+          bio: _bioController.text,
+          file: _img!);
+
+      if (res == 'success') {
+        String res = await AuthMethods()
+            .loginUser(_mailController.text, _passwordController.text);
+        if (res == 'success') {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Home(),
+              ));
+        } else {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(res)));
+        }
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res)));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('veillez selectionnez une photo')));
+    }
+    setState(() {
+      loading = false;
+    });
+  }
+
   selectImage() async {
     Uint8List im = await imagePicker(ImageSource.gallery);
     setState(() {
-      _img = im;
+      if (im != null) {
+        _img = im;
+      }
     });
   }
 
@@ -128,13 +175,7 @@ class _SignUp extends State<SignUp> {
                 height: 24,
               ),
               InkWell(
-                onTap: () => AuthMethods().signUpUser(
-                  email: _mailController.text,
-                  password: _passwordController.text,
-                  username: _usernameController.text,
-                  bio: _bioController.text,
-                  file: _img!,
-                ),
+                onTap: sign,
                 child: Container(
                   width: double.infinity,
                   alignment: Alignment.center,
@@ -143,7 +184,11 @@ class _SignUp extends State<SignUp> {
                       color: Colors.blue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(4)))),
-                  child: Text('Sign Up'),
+                  child: loading
+                      ? CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : Text('Sign Up'),
                 ),
               ),
               const SizedBox(

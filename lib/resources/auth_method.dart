@@ -1,4 +1,6 @@
 // import 'dart:ffi';
+// ignore_for_file: unnecessary_null_comparison
+
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,6 +19,22 @@ class AuthMethods {
     return UserModel.fromSnap(snapshot);
   }
 
+  Future<void> signUser({
+    required String email,
+    required String password,
+    required String username,
+    required String bio,
+    required Uint8List file,
+  }) async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      // return 'success';
+    } catch (e) {
+      // return e.toString();
+    }
+  }
+
   //signup user
   Future<String> signUpUser({
     required String email,
@@ -27,13 +45,10 @@ class AuthMethods {
   }) async {
     String res = "some error";
     try {
-      print('object');
-      if (email.isNotEmpty ||
-          password.isNotEmpty ||
-          username.isNotEmpty ||
-          bio.isNotEmpty ||
-          // ignore: unnecessary_null_comparison
-          file != null) {
+      if (email.isNotEmpty &&
+          password.isNotEmpty &&
+          username.isNotEmpty &&
+          bio.isNotEmpty) {
         //registrer user
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
@@ -51,23 +66,14 @@ class AuthMethods {
           'photoUrl': photoUrl
         });
 
-        //other method to add user
-        // _firestore.collection('users').add({
-        //   'username': username,
-        //   'uid': cred.user!.uid,
-        //   'email': email,
-        //   'bio': bio,
-        //   'followers': [],
-        //   'followings': []
-        // });
-
         res = "success";
+      } else {
+        await Future.delayed(Duration(seconds: 5));
+        res = 'complete all fields';
       }
-      print(bio);
     } catch (e) {
       res = e.toString();
     }
-    print(res);
     return res;
   }
 
@@ -75,10 +81,26 @@ class AuthMethods {
   Future<String> loginUser(String email, String password) async {
     String res = 'some error';
     try {
-      if (email.isNotEmpty || password.isNotEmpty) {
+      if (email.isNotEmpty && password.isNotEmpty) {
         await _auth.signInWithEmailAndPassword(
             email: email, password: password);
         res = 'success';
+      } else {
+        res = 'complete all fields';
+      }
+    } catch (e) {
+      res = e.toString();
+    }
+    return res;
+  }
+
+  Future<String> sign_up(String email, String password, String username,
+      String bio, Uint8List file) async {
+    String res = 'some error';
+    try {
+      if (email.isNotEmpty && password.isNotEmpty) {
+        UserCredential cred = await _auth.createUserWithEmailAndPassword(
+            email: email, password: password);
       } else {
         res = 'complete all fields';
       }

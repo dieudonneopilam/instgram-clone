@@ -4,14 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gde/bloc/bottom.navigation.bar/bottom_navigation_bar_bloc.dart';
-import 'package:gde/resources/auth_method.dart';
+import 'package:gde/bloc/current.user/current_user_bloc.dart';
 import 'package:gde/responsive/mobileScreen.dart';
 import 'package:gde/responsive/responsive_layout.dart';
 import 'package:gde/responsive/webScreen.dart';
 import 'package:gde/screens/login_screen.dart';
 import 'package:provider/provider.dart';
-
-import 'bloc/current.user/cureent_user_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,8 +36,11 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         BlocProvider(
-            create: (context) => CureentUserBloc(authMethod: AuthMethods())),
-        BlocProvider(create: (context) => BottomNavigationBarBloc()),
+          create: (context) => BottomNavigationBarBloc(),
+        ),
+        BlocProvider(
+          create: (context) => CurrentUserBloc(auth: FirebaseAuth.instance),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

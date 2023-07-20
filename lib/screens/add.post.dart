@@ -1,6 +1,11 @@
-import 'dart:typed_data';
+// ignore_for_file: unnecessary_null_comparison
 
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gde/bloc/current.user/current_user_bloc.dart';
+import 'package:gde/resources/firestore_methods.dart';
+import 'package:gde/utils/snackbar.dart';
 import 'package:gde/utils/utilis.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,8 +20,40 @@ class _AddPostState extends State<AddPost> {
   Uint8List? _file;
 
   TextEditingController descriptionController = TextEditingController();
+  bool loading = false;
 
-  void postImage() {}
+  @override
+  void dispose() {
+    descriptionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> postImage(
+      String uid, String username, String profilImage) async {
+    setState(() {
+      loading = true;
+    });
+    try {
+      String res = await FirestoreMedthods().uploadPost(
+          descriptionController.text, _file!, uid, username, profilImage);
+      if (res == "success") {
+        showSnackBar('Posted', context);
+        clearFile();
+      }
+    } catch (e) {
+      showSnackBar(e.toString(), context);
+    }
+    setState(() {
+      loading = false;
+    });
+  }
+
+  void clearFile() {
+    setState(() {
+      _file = null;
+    });
+  }
+
   _selectImage(BuildContext context) async {
     return showDialog(
       context: context,
@@ -29,7 +66,9 @@ class _AddPostState extends State<AddPost> {
               Navigator.of(context).pop();
               Uint8List file = await imagePicker(ImageSource.camera);
               setState(() {
-                _file = file;
+                if (file != null) {
+                  _file = file;
+                }
               });
             },
           ),
@@ -61,27 +100,48 @@ class _AddPostState extends State<AddPost> {
         : Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.black,
-              leading:
-                  IconButton(icon: Icon(Icons.arrow_back), onPressed: () {}),
+              leading: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    clearFile();
+                  }),
               title: Text('Post to '),
               actions: [
-                TextButton(
-                    onPressed: () {},
-                    child: Text('Post', style: TextStyle(color: Colors.blue)))
+                BlocBuilder<CurrentUserBloc, CurrentUserState>(
+                  builder: (context, state) {
+                    (state as CurrentUserInitial);
+                    return TextButton(
+                        onPressed: () => postImage(state.user.uid,
+                            state.user.username, state.user.photoUrl),
+                        child:
+                            Text('Post', style: TextStyle(color: Colors.blue)));
+                  },
+                )
               ],
             ),
             body: Column(
               children: [
+                loading
+                    ? Container(
+                        margin: const EdgeInsets.symmetric(vertical: 5),
+                        child: LinearProgressIndicator())
+                    : Container(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
-                      backgroundImage: AssetImage('assets/img/default.jpg'),
+                    BlocBuilder<CurrentUserBloc, CurrentUserState>(
+                      builder: (context, state) {
+                        return CircleAvatar(
+                          backgroundImage: NetworkImage(
+                              (state as CurrentUserInitial).user.photoUrl),
+                        );
+                      },
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.45,
                       child: TextField(
+                        controller: descriptionController,
                         maxLines: 8,
                         decoration: InputDecoration(
                             border: InputBorder.none,
@@ -96,7 +156,7 @@ class _AddPostState extends State<AddPost> {
                         child: Container(
                           decoration: BoxDecoration(
                               image: DecorationImage(
-                                  fit: BoxFit.fill,
+                                  fit: BoxFit.cover,
                                   alignment: FractionalOffset.topCenter,
                                   image: MemoryImage(_file!))),
                         ),

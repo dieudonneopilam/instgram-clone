@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gde/bloc/current.user/current_user_bloc.dart';
 
 class WebScreenLayout extends StatefulWidget {
   const WebScreenLayout({super.key});
@@ -9,11 +11,27 @@ class WebScreenLayout extends StatefulWidget {
 
 class _WebScreenLayout extends State<WebScreenLayout> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('this is the web screen'),
-      ),
+    return BlocBuilder<CurrentUserBloc, CurrentUserState>(
+      builder: (context, state) {
+        (state as CurrentUserInitial);
+        return Scaffold(
+          body: Center(
+            child: GestureDetector(
+              onTap: () => context.read<CurrentUserBloc>().add(OnChanged()),
+              child: Text(
+                'state.user.toString()',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

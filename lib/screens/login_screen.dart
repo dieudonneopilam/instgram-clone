@@ -14,6 +14,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _mailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  late bool loading = false;
   @override
   void dispose() {
     _mailController.dispose();
@@ -30,6 +31,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void loginUser() async {
+    print('object');
+    setState(() {
+      loading = true;
+    });
     String res = await AuthMethods()
         .loginUser(_mailController.text, _passwordController.text);
     if (res == 'success') {
@@ -38,7 +43,12 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(
             builder: (context) => Home(),
           ));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res)));
     }
+    setState(() {
+      loading = false;
+    });
     print(res);
   }
 
@@ -89,7 +99,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.blue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(4)))),
-                  child: Text('Login'),
+                  child: loading
+                      ? CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : Text('Login'),
                 ),
               ),
               const SizedBox(
