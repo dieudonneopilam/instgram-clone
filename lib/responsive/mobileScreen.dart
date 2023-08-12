@@ -5,6 +5,9 @@ import 'package:gde/bloc/bottom.navigation.bar/bottom_navigation_bar_bloc.dart';
 import 'package:gde/bloc/current.user/current_user_bloc.dart';
 import 'package:gde/screens/add.post.dart';
 import 'package:gde/screens/feed_screen.dart';
+import 'package:gde/screens/profil_screen.dart';
+
+import '../screens/search_screen.dart';
 
 class MobileScreenLayout extends StatefulWidget {
   const MobileScreenLayout({super.key});
@@ -18,10 +21,17 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
 
   List<Widget> pages = [
     FeedScreen(),
-    Center(child: Text('salut')),
+    SearchScreen(),
     AddPost(),
     Text('data'),
-    Text('data')
+    BlocBuilder<CurrentUserBloc, CurrentUserState>(
+      builder: (context, state) {
+        (state as CurrentUserInitial);
+        return ProfilScreen(
+          uid: state.user.uid,
+        );
+      },
+    )
   ];
 
   @override
